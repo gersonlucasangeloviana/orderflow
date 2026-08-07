@@ -1,0 +1,39 @@
+@page "/"
+@inject Services.ProductCatalogClient CatalogClient
+
+<h1>Catálogo</h1>
+@if (_error is not null)
+{
+    <p role="alert">@_error</p>
+}
+else if (_products is null)
+{
+    <p>Carregando produtos…</p>
+}
+else
+{
+    <p>@_products.Count produto(s)</p>
+    <ul>
+        @foreach (var product in _products.Skip(_page * PageSize).Take(PageSize))
+        {
+            <li><strong>@product.Name</strong> — @product.Sku — @product.Price.ToString("C")</li>
+        }
+    </ul>
+    <button disabled="@(_page == 0)" @onclick="Previous">Anterior</button>
+    <button disabled="@((_page + 1) * PageSize >= _products.Count)" @onclick="Next">Próxima</button>
+}
+
+@code {
+    private const int PageSize = 12;
+    private IReadOnlyList<Models.ProductDto>? _products;
+    private string? _error;
+    private int _page;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { _products = await CatalogClient.GetAsync(); }
+        catch { _error = "Não foi possível carregar o catálogo agora."; }
+    }
+    private void Previous() => _page--;
+    private void Next() => _page++;
+}
