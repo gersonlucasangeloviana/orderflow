@@ -38,7 +38,10 @@ jobs:
           path: "**/TestResults/*.trx"
           if-no-files-found: ignore
       - name: Dependency vulnerability report
-        run: dotnet list OrderFlow.sln package --vulnerable --include-transitive
+        run: |
+          for project in src/OrderFlow.Api src/OrderFlow.Web src/OrderFlow.Admin.Mvc src/OrderFlow.Freight src/OrderFlow.Notifications src/OrderFlow.LogIngestion; do
+            dotnet list "$project" package --vulnerable --include-transitive
+          done
 
   docker:
     name: Verify Docker images
@@ -60,8 +63,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
-        with: { dotnet-version: 8.0.x }
-      - run: dotnet workload install maui-android
+        with: { dotnet-version: 10.0.x }
+      - run: |
+          dotnet workload install maui-android
+          dotnet workload restore src/OrderFlow.Mobile.Maui/OrderFlow.Mobile.Maui.csproj
       - run: dotnet build src/OrderFlow.Mobile.Maui/OrderFlow.Mobile.Maui.csproj -c Release
 
   secrets:

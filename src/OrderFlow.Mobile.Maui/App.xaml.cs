@@ -2,5 +2,13 @@ namespace OrderFlow.Mobile.Maui;
 
 public partial class App : Application
 {
-    public App(MainPage mainPage) { InitializeComponent(); MainPage = new NavigationPage(mainPage); }
+    private readonly MainPage _mainPage;
+
+    public App(MainPage mainPage)
+    {
+        InitializeComponent();
+        _mainPage = mainPage;
+    }
+
+    protected override Window CreateWindow(IActivationState? activationState) => new(new NavigationPage(_mainPage));
 }
