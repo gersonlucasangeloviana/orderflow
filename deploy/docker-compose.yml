@@ -24,6 +24,9 @@ services:
   log-ingestion:
     build: { context: .., dockerfile: src/OrderFlow.LogIngestion/Dockerfile }
     depends_on: { rabbitmq: { condition: service_healthy } }
+    environment:
+      RabbitMq__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+      Mongo__ConnectionString: "mongodb://mongo:27017"
   sql:
     image: "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04"
     environment: { ACCEPT_EULA: "Y", MSSQL_SA_PASSWORD: "${SQL_SA_PASSWORD}" }

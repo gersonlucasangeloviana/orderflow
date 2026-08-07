@@ -8,7 +8,7 @@
 | 3 Frontends | Blazor WASM, MVC e MAUI Android estruturados | Web e MVC compilam; MAUI depende da workload |
 | 4 Frete | Contrato Protobuf compartilhado, serviço gRPC e adapter cliente com timeout/503 | Builds API e Freight aprovados |
 | 5 Notificações | Publicador da Outbox, RabbitMQ, fila durável, ACK/NACK, retry limitado, DLQ, e-mail simulado e idempotência SQL por `MessageId` | Builds API/Worker e Compose aprovados |
-| 6 Logs | Worker de ingestão presente | Build aprovado; Serilog/Mongo pipeline pendente |
+| 6 Logs | Serilog, buffer limitado, publicação RabbitMQ, Worker Mongo em lote, índices e TTL de 30 dias | Builds API/Worker aprovados; retry durável do lote Mongo ainda pendente |
 | 7 MAUI | Cliente Android e HTTP isolado | Workload Android pendente localmente |
 | 8 Publicação | Dockerfiles, Compose produção e CI | Compose e imagens devem ser exercitados com Docker |
 

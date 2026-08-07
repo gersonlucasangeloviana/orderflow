@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.Channels;
+using Serilog;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
@@ -20,6 +22,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireRole("Admin")));
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddHostedService<OutboxPublisherWorker>();
+var logChannel = Channel.CreateBounded<TechnicalLogEntry>(new BoundedChannelOptions(1_000) { FullMode = BoundedChannelFullMode.DropWrite, SingleReader = true });
+builder.Services.AddSingleton(logChannel.Reader);
+builder.Services.AddSingleton(logChannel.Writer);
+builder.Services.AddHostedService<RabbitLogPublisher>();
+builder.Host.UseSerilog((_, services, loggerConfiguration) => loggerConfiguration.WriteTo.Console().WriteTo.Sink(new AsyncRabbitLogSink(services.GetRequiredService<ChannelWriter<TechnicalLogEntry>>())));
 builder.Services.AddScoped<CreateOrder>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
