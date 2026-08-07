@@ -1,0 +1,7 @@
+@startuml
+class Order { +AddItem() +SetFreight() +Confirm() +Cancel() +Ship() }
+class OrderItem
+class Product
+Order "1" *-- "1..*" OrderItem
+OrderItem --> Product : snapshot (name, sku, price)
+@enduml

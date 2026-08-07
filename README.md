@@ -4,6 +4,10 @@ Portfólio Full-Stack .NET 8 para gestão de pedidos, construído como monorepo 
 
 > Estado atual: fundação e núcleo de domínio implementados. Os adaptadores de banco, Redis, RabbitMQ, MongoDB, gRPC e as UIs estão definidos na arquitetura, mas ainda precisam ser concluídos antes de produção.
 
+## Estrutura do monorepo
+
+Todos os módulos da solution ficam em `src/`: Domain, Application, Infrastructure, API, Web (Blazor WASM), Admin.Mvc, Freight, Notifications, LogIngestion, Contracts e Mobile.Maui. Os quatro níveis de teste estão em `tests/`; deploy, ADRs, UML e scripts ficam nas pastas homônimas.
+
 ## Arquitetura
 
 `Adapters/Infrastructure → Application → Domain`. O domínio não conhece HTTP, EF Core, mensageria ou cache. A API é uma porta de entrada REST; persistência e publicação são portas implementadas pela infraestrutura.

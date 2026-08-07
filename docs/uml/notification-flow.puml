@@ -1,0 +1,10 @@
+@startuml
+participant API
+database SQL
+queue RabbitMQ
+participant Notifications
+API -> SQL: Order + Outbox (atomic)
+SQL -> RabbitMQ: notifications.requested
+RabbitMQ -> Notifications: NotificationRequested
+Notifications -> Notifications: idempotência(MessageId), ACK/NACK
+@enduml

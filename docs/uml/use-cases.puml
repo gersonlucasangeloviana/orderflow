@@ -1,0 +1,10 @@
+@startuml
+left to right direction
+actor Customer
+actor Admin
+Customer --> (Consultar catálogo)
+Customer --> (Criar pedido)
+Customer --> (Acompanhar pedido)
+Admin --> (Gerenciar produtos)
+Admin --> (Gerenciar pedidos)
+@enduml

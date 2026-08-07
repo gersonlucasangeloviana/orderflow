@@ -1,0 +1,2 @@
+var builder = Host.CreateApplicationBuilder(args); builder.Services.AddHostedService<NotificationWorker>(); await builder.Build().RunAsync();
+public sealed class NotificationWorker(ILogger<NotificationWorker> logger) : BackgroundService { protected override async Task ExecuteAsync(CancellationToken token) { while (!token.IsCancellationRequested) { logger.LogInformation("Notification worker ready for notifications.requested"); await Task.Delay(TimeSpan.FromMinutes(1), token); } } }

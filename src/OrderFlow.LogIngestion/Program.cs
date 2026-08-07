@@ -1,0 +1,2 @@
+var builder = Host.CreateApplicationBuilder(args); builder.Services.AddHostedService<LogIngestionWorker>(); await builder.Build().RunAsync();
+public sealed class LogIngestionWorker(ILogger<LogIngestionWorker> logger) : BackgroundService { protected override async Task ExecuteAsync(CancellationToken token) { while (!token.IsCancellationRequested) { logger.LogInformation("Log worker ready for logs.events batch ingestion"); await Task.Delay(TimeSpan.FromMinutes(1), token); } } }

@@ -1,0 +1,9 @@
+@startuml
+participant API
+queue "logs.events" as MQ
+participant LogIngestion
+database MongoDB
+API -> MQ: buffer limitado / prioridade
+MQ -> LogIngestion: lote, retry e DLQ
+LogIngestion -> MongoDB: insertMany + TTL 30 dias
+@enduml

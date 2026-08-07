@@ -1,0 +1,8 @@
+services:
+  api:
+    restart: unless-stopped
+    environment: { ASPNETCORE_ENVIRONMENT: Production }
+  sql: { ports: [] }
+  redis: { ports: [] }
+  rabbitmq: { ports: [] }
+  mongo: { ports: [] }

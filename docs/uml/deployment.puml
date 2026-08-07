@@ -1,0 +1,9 @@
+@startuml
+node Dokploy { [Web] [MVC] [API] }
+node "Internal network" { database SQL; database Redis; queue RabbitMQ; database MongoDB; [Freight] [Workers] }
+[API] --> SQL
+[API] --> Redis
+[API] --> RabbitMQ
+[API] --> [Freight]
+[Workers] --> MongoDB
+@enduml
