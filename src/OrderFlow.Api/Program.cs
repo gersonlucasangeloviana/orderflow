@@ -35,6 +35,7 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
     var roles = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     foreach (var role in new[] { "Admin", "Customer" }) if (!await roles.RoleExistsAsync(role)) await roles.CreateAsync(new IdentityRole<Guid>(role));
+    await DemoAccountSeeder.SeedAsync(scope.ServiceProvider, app.Configuration);
 }
 app.UseRateLimiter();
 app.UseAuthentication();

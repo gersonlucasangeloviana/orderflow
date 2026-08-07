@@ -4,6 +4,7 @@ services:
     environment:
       ConnectionStrings__SqlServer: "Server=sql;Database=orderflow;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
       RabbitMq__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+      DemoSeed__Enabled: "true"
     ports: ["8080:8080"]
     depends_on: { sql: { condition: service_healthy }, redis: { condition: service_healthy }, rabbitmq: { condition: service_healthy } }
   web:

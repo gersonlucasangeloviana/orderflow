@@ -26,6 +26,13 @@ Blazor / MVC / .NET MAUI → API → Application → Domain
 
 Na primeira inicialização, a API aplica as migrations e executa o seed SQL versionado de oito produtos de demonstração. Registre um usuário em `/api/auth/register`, faça login e use o JWT para criar pedidos com esses produtos.
 
+Quando `DemoSeed__Enabled=true` (já configurado no Compose local), a API também cria as contas de demonstração abaixo. Elas não devem ser habilitadas em produção.
+
+| Papel | E-mail | Senha |
+|---|---|---|
+| Cliente | `customer@orderflow.local` | `OrderFlow!Demo2026` |
+| Administrador | `admin@orderflow.local` | `OrderFlow!Admin2026` |
+
 A API expõe `/health`, `/swagger` e os endpoints iniciais `/api/products` e `/api/orders`.
 
 ## Aplicativo móvel
