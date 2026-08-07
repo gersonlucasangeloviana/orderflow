@@ -19,6 +19,7 @@ var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationExcep
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters { ValidateIssuer = true, ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "OrderFlow", ValidateAudience = true, ValidAudience = builder.Configuration["Jwt:Audience"] ?? "OrderFlow", ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)), ValidateLifetime = true });
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireRole("Admin")));
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddHostedService<OutboxPublisherWorker>();
 builder.Services.AddScoped<CreateOrder>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

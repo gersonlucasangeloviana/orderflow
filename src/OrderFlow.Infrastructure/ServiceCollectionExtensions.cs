@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFlow.Application;
 using OrderFlow.Contracts.Freight;
+using RabbitMQ.Client;
 
 namespace OrderFlow.Infrastructure;
 
@@ -21,6 +22,9 @@ public static class ServiceCollectionExtensions
         var freightAddress = configuration["Freight:Address"] ?? "http://freight:8080";
         services.AddGrpcClient<FreightService.FreightServiceClient>(options => options.Address = new Uri(freightAddress));
         services.AddScoped<IFreightQuoteProvider, GrpcFreightQuoteProvider>();
+        var rabbitUri = configuration["RabbitMq:Uri"] ?? "amqp://guest:guest@rabbitmq:5672/";
+        services.AddSingleton<IConnection>(_ => new ConnectionFactory { Uri = new Uri(rabbitUri), DispatchConsumersAsync = true }.CreateConnection());
+        services.AddScoped<IOutboxDispatcher, RabbitMqOutboxDispatcher>();
         return services;
     }
 }
