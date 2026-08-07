@@ -1,0 +1,15 @@
+@startuml
+skinparam componentStyle rectangle
+[Blazor WASM] --> [OrderFlow API]
+[MVC Admin] --> [OrderFlow API]
+[Xamarin Legacy] --> [OrderFlow API]
+[OrderFlow API] --> [Application]
+[Application] --> [Domain]
+[OrderFlow API] --> [SQL Server]
+[OrderFlow API] --> [Redis]
+[OrderFlow API] --> [Freight gRPC]
+[OrderFlow API] --> [RabbitMQ]
+[RabbitMQ] --> [Notifications Worker]
+[RabbitMQ] --> [Log Ingestion]
+[Log Ingestion] --> [MongoDB]
+@enduml

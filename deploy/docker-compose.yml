@@ -1,0 +1,25 @@
+services:
+  api:
+    build: ../src/OrderFlow.Api
+    environment:
+      ConnectionStrings__SqlServer: Server=sql;Database=orderflow;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True
+    ports: ["8080:8080"]
+    depends_on: { sql: { condition: service_healthy }, redis: { condition: service_healthy }, rabbitmq: { condition: service_healthy } }
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04
+    environment: { ACCEPT_EULA: Y, MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD} }
+    volumes: [sql-data:/var/opt/mssql]
+    healthcheck: { test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q 'SELECT 1'"], interval: 15s, timeout: 5s, retries: 10 }
+  redis:
+    image: redis:7.4.2-alpine
+    volumes: [redis-data:/data]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 10s, timeout: 3s, retries: 5 }
+  rabbitmq:
+    image: rabbitmq:4.0.5-management-alpine
+    environment: { RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}, RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD} }
+    volumes: [rabbit-data:/var/lib/rabbitmq]
+    healthcheck: { test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"], interval: 15s, timeout: 5s, retries: 10 }
+  mongo:
+    image: mongo:8.0.4
+    volumes: [mongo-data:/data/db]
+volumes: { sql-data: {}, redis-data: {}, rabbit-data: {}, mongo-data: {} }

@@ -1,0 +1,5 @@
+syntax = "proto3";
+option csharp_namespace = "OrderFlow.Contracts.Freight";
+service FreightService { rpc CalculateQuote (FreightQuoteRequest) returns (FreightQuoteResponse); }
+message FreightQuoteRequest { string postal_code = 1; double total_weight = 2; double cart_value = 3; }
+message FreightQuoteResponse { double amount = 1; string service = 2; }

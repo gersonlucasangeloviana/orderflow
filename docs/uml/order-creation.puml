@@ -1,0 +1,13 @@
+@startuml
+actor Customer
+participant API
+participant Application
+database SQL
+queue RabbitMQ
+Customer -> API: POST /orders (CorrelationId)
+API -> Application: CreateOrder
+Application -> SQL: Order + Outbox (transaction)
+Application --> API: Created
+API --> Customer: 201
+SQL -> RabbitMQ: NotificationRequested
+@enduml
