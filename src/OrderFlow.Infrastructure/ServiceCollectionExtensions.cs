@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFlow.Application;
+using OrderFlow.Contracts.Freight;
 
 namespace OrderFlow.Infrastructure;
 
@@ -17,6 +18,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IOrderRepository, SqlOrderRepository>();
         services.AddScoped<INotificationOutbox, SqlNotificationOutbox>();
         services.AddScoped<SqlProductCatalog>();
+        var freightAddress = configuration["Freight:Address"] ?? "http://freight:8080";
+        services.AddGrpcClient<FreightService.FreightServiceClient>(options => options.Address = new Uri(freightAddress));
+        services.AddScoped<IFreightQuoteProvider, GrpcFreightQuoteProvider>();
         return services;
     }
 }

@@ -49,6 +49,11 @@ app.MapPost("/api/auth/login", async (LoginRequest request, UserManager<Applicat
     return Results.Ok(new { accessToken = await tokens.CreateAsync(user) });
 });
 app.MapGet("/api/products", async (SqlProductCatalog catalog, CancellationToken cancellationToken) => Results.Ok(await catalog.ListAsync(cancellationToken))).RequireRateLimiting("public");
+app.MapPost("/api/freight/quote", async (FreightQuoteRequest request, IFreightQuoteProvider freight, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(new { amount = await freight.CalculateAsync(request.PostalCode, request.TotalWeight, request.CartValue, cancellationToken) }); }
+    catch (FreightUnavailableException) { return Results.Problem("O frete está temporariamente indisponível.", statusCode: StatusCodes.Status503ServiceUnavailable); }
+}).RequireAuthorization();
 app.MapPost("/api/orders", async (CreateOrderRequest request, CreateOrder useCase, OrderFlowDbContext db, HttpContext context, CancellationToken cancellationToken) =>
 {
     var ids = request.Items.Select(item => item.ProductId).Distinct().ToArray();
@@ -64,5 +69,6 @@ app.Run();
 
 public sealed record CreateOrderRequest(decimal Freight, List<CreateOrderItem> Items);
 public sealed record CreateOrderItem(Guid ProductId, int Quantity);
+public sealed record FreightQuoteRequest(string PostalCode, decimal TotalWeight, decimal CartValue);
 public sealed record RegisterRequest(string Name, string Email, string Password);
 public sealed record LoginRequest(string Email, string Password);

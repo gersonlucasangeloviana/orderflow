@@ -1,1 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk" />
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Grpc.Tools" Version="2.66.0"><PrivateAssets>all</PrivateAssets></PackageReference><PackageReference Include="Google.Protobuf" Version="3.28.2" /><PackageReference Include="Grpc.Core.Api" Version="2.66.0" /><Protobuf Include="freight.proto" GrpcServices="Both" /></ItemGroup></Project>

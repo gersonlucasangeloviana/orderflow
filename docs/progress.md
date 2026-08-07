@@ -6,7 +6,7 @@
 | 1 Domínio/TDD | Regras de pedido e quatro testes de domínio | 4 testes aprovados |
 | 2 API/SQL | EF Core SQL Server, migrations, esquema transacional, catálogo, Outbox, Identity e JWT | Build da API aprovado; endpoints de auth e policy Admin implementados |
 | 3 Frontends | Blazor WASM, MVC e MAUI Android estruturados | Web e MVC compilam; MAUI depende da workload |
-| 4 Frete | Projeto gRPC e contrato Protobuf com cálculo inicial | Build aprovado |
+| 4 Frete | Contrato Protobuf compartilhado, serviço gRPC e adapter cliente com timeout/503 | Builds API e Freight aprovados |
 | 5 Notificações | Worker e contrato presentes | Build aprovado; RabbitMQ/Outbox/DLQ pendentes |
 | 6 Logs | Worker de ingestão presente | Build aprovado; Serilog/Mongo pipeline pendente |
 | 7 MAUI | Cliente Android e HTTP isolado | Workload Android pendente localmente |

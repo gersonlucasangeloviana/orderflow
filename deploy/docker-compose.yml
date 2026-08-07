@@ -13,6 +13,7 @@ services:
     ports: ["8082:8080"]
   freight:
     build: { context: .., dockerfile: src/OrderFlow.Freight/Dockerfile }
+    environment: { ASPNETCORE_URLS: "http://+:8080" }
   notifications:
     build: { context: .., dockerfile: src/OrderFlow.Notifications/Dockerfile }
     depends_on: { rabbitmq: { condition: service_healthy } }
