@@ -1,21 +1,22 @@
-using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Contracts;
+using OrderFlow.Infrastructure;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSingleton<IEmailSender, SimulatedEmailSender>();
+builder.Services.AddOrderFlowInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<NotificationWorker>();
 await builder.Build().RunAsync();
 
 public interface IEmailSender { Task SendOrderCreatedAsync(NotificationRequested message, CancellationToken cancellationToken); }
 public sealed class SimulatedEmailSender(ILogger<SimulatedEmailSender> logger) : IEmailSender { public Task SendOrderCreatedAsync(NotificationRequested message, CancellationToken cancellationToken) { logger.LogInformation("Simulated e-mail sent for order {OrderId}, correlation {CorrelationId}", message.OrderId, message.CorrelationId); return Task.CompletedTask; } }
 
-public sealed class NotificationWorker(IConfiguration configuration, IEmailSender sender, ILogger<NotificationWorker> logger) : BackgroundService
+public sealed class NotificationWorker(IConfiguration configuration, IEmailSender sender, IServiceScopeFactory scopes, ILogger<NotificationWorker> logger) : BackgroundService
 {
-    private readonly ConcurrentDictionary<Guid, byte> _processed = new();
     protected override Task ExecuteAsync(CancellationToken token)
     {
         var uri = configuration["RabbitMq:Uri"] ?? "amqp://guest:guest@rabbitmq:5672/";
@@ -31,7 +32,14 @@ public sealed class NotificationWorker(IConfiguration configuration, IEmailSende
             try
             {
                 var message = JsonSerializer.Deserialize<NotificationRequested>(Encoding.UTF8.GetString(delivery.Body.ToArray())) ?? throw new InvalidOperationException("Invalid notification payload");
-                if (_processed.TryAdd(message.MessageId, 0)) await sender.SendOrderCreatedAsync(message, token);
+                using var scope = scopes.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<OrderFlowDbContext>();
+                if (!await db.ProcessedNotifications.AnyAsync(item => item.MessageId == message.MessageId, token))
+                {
+                    await sender.SendOrderCreatedAsync(message, token);
+                    db.ProcessedNotifications.Add(new ProcessedNotificationEntity { MessageId = message.MessageId, OrderId = message.OrderId, ProcessedAt = DateTimeOffset.UtcNow });
+                    await db.SaveChangesAsync(token);
+                }
                 channel.BasicAck(delivery.DeliveryTag, false);
             }
             catch (Exception exception)

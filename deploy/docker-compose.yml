@@ -18,7 +18,9 @@ services:
   notifications:
     build: { context: .., dockerfile: src/OrderFlow.Notifications/Dockerfile }
     depends_on: { rabbitmq: { condition: service_healthy } }
-    environment: { RabbitMq__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/" }
+    environment:
+      RabbitMq__Uri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/"
+      ConnectionStrings__SqlServer: "Server=sql;Database=orderflow;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
   log-ingestion:
     build: { context: .., dockerfile: src/OrderFlow.LogIngestion/Dockerfile }
     depends_on: { rabbitmq: { condition: service_healthy } }
