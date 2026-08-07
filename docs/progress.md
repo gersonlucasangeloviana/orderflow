@@ -4,7 +4,7 @@
 |---|---|---|
 | 0 Fundação | Monorepo, solution, Compose, CI, ADR e PlantUML | Estrutura verificada |
 | 1 Domínio/TDD | Regras de pedido e quatro testes de domínio | 4 testes aprovados |
-| 2 API/SQL | EF Core SQL Server, migrations, esquema transacional, catálogo, Outbox, Identity e JWT | Build da API aprovado; endpoints de auth e policy Admin implementados |
+| 2 API/SQL | EF Core SQL Server, migrations, catálogo básico via script SQL idempotente, Outbox, Identity e JWT | Build da API aprovado; migration de seed reconhecida pelo EF |
 | 3 Frontends | Blazor WASM com catálogo REST e paginação, MVC e MAUI Android estruturados | Web e MVC compilam; carrinho/login e MAUI dependem das próximas etapas/workload |
 | 4 Frete | Contrato Protobuf compartilhado, serviço gRPC e adapter cliente com timeout/503 | Builds API e Freight aprovados |
 | 5 Notificações | Publicador da Outbox, RabbitMQ, fila durável, ACK/NACK, retry limitado, DLQ, e-mail simulado e idempotência SQL por `MessageId` | Builds API/Worker e Compose aprovados |

@@ -24,6 +24,8 @@ Blazor / MVC / .NET MAUI → API → Application → Domain
 3. Execute `docker compose --env-file .env -f deploy/docker-compose.yml up -d`.
 4. Execute `dotnet test` e `dotnet run --project src/OrderFlow.Api`.
 
+Na primeira inicialização, a API aplica as migrations e executa o seed SQL versionado de oito produtos de demonstração. Registre um usuário em `/api/auth/register`, faça login e use o JWT para criar pedidos com esses produtos.
+
 A API expõe `/health`, `/swagger` e os endpoints iniciais `/api/products` e `/api/orders`.
 
 ## Aplicativo móvel
