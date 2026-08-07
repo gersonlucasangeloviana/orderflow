@@ -9,7 +9,7 @@ Portfólio Full-Stack .NET 8 para gestão de pedidos, construído como monorepo 
 `Adapters/Infrastructure → Application → Domain`. O domínio não conhece HTTP, EF Core, mensageria ou cache. A API é uma porta de entrada REST; persistência e publicação são portas implementadas pela infraestrutura.
 
 ```text
-Blazor / MVC / Xamarin legado → API → Application → Domain
+Blazor / MVC / .NET MAUI → API → Application → Domain
                                   └→ SQL, Redis, RabbitMQ, gRPC (adapters)
 ```
 
@@ -22,9 +22,9 @@ Blazor / MVC / Xamarin legado → API → Application → Domain
 
 A API expõe `/health`, `/swagger` e os endpoints iniciais `/api/products` e `/api/orders`.
 
-## Módulo legado
+## Aplicativo móvel
 
-`legacy/OrderFlow.Mobile.Xamarin` é apenas demonstração: Xamarin.Forms encerrou suporte em maio de 2024. Ele não entra no deploy do Dokploy e deverá migrar para .NET MAUI conforme [o plano](docs/xamarin-to-maui.md).
+`src/OrderFlow.Mobile.Maui` é um cliente .NET MAUI Android que consome a API REST para catálogo, carrinho, frete e pedidos. Ele é distribuído como app móvel e não entra no deploy do Dokploy.
 
 ## Documentação
 

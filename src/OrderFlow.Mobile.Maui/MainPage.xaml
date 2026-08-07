@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" x:Class="OrderFlow.Mobile.Maui.MainPage" Title="OrderFlow">
+  <VerticalStackLayout Padding="24" Spacing="16">
+    <Label Text="Catálogo" FontSize="28" />
+    <Button Text="Carregar produtos" Clicked="OnLoadProductsClicked" />
+    <CollectionView x:Name="Products"><CollectionView.ItemTemplate><DataTemplate><Label Text="{Binding Name}" /></DataTemplate></CollectionView.ItemTemplate></CollectionView>
+  </VerticalStackLayout>
+</ContentPage>

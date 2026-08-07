@@ -2,7 +2,7 @@
 skinparam componentStyle rectangle
 [Blazor WASM] --> [OrderFlow API]
 [MVC Admin] --> [OrderFlow API]
-[Xamarin Legacy] --> [OrderFlow API]
+[.NET MAUI Mobile] --> [OrderFlow API]
 [OrderFlow API] --> [Application]
 [Application] --> [Domain]
 [OrderFlow API] --> [SQL Server]
