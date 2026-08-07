@@ -7,7 +7,7 @@ public sealed class CreateOrder(IOrderRepository orders, INotificationOutbox out
 {
     public async Task<Order> ExecuteAsync(Guid customerId, IEnumerable<(Product Product, int Quantity)> lines, decimal freight, string correlationId, CancellationToken cancellationToken)
     {
-        var order = new Order();
+        var order = new Order(customerId);
         foreach (var (product, quantity) in lines) order.AddItem(product, quantity);
         order.SetFreight(freight);
         // A outbox compartilha a transação do pedido; a publicação pode ser retomada com segurança.

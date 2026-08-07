@@ -6,10 +6,13 @@ public sealed class Order
 {
     private readonly List<OrderItem> _items = [];
     public Guid Id { get; } = Guid.NewGuid();
+    public Guid CustomerId { get; }
     public OrderStatus Status { get; private set; } = OrderStatus.Created;
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
     public decimal Freight { get; private set; }
     public decimal Total => _items.Sum(item => item.UnitPrice * item.Quantity) + Freight;
+
+    public Order(Guid? customerId = null) => CustomerId = customerId ?? Guid.Empty;
 
     public void AddItem(Product product, int quantity)
     {

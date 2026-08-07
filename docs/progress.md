@@ -4,7 +4,7 @@
 |---|---|---|
 | 0 Fundação | Monorepo, solution, Compose, CI, ADR e PlantUML | Estrutura verificada |
 | 1 Domínio/TDD | Regras de pedido e quatro testes de domínio | 4 testes aprovados |
-| 2 API/SQL | API, portas e projeto Infrastructure | Build da API aprovado; EF/Identity/migrations pendentes |
+| 2 API/SQL | EF Core SQL Server, migration inicial, esquema transacional, catálogo e Outbox transacional | Build da API aprovado; Identity ainda em evolução |
 | 3 Frontends | Blazor WASM, MVC e MAUI Android estruturados | Web e MVC compilam; MAUI depende da workload |
 | 4 Frete | Projeto gRPC e contrato Protobuf com cálculo inicial | Build aprovado |
 | 5 Notificações | Worker e contrato presentes | Build aprovado; RabbitMQ/Outbox/DLQ pendentes |

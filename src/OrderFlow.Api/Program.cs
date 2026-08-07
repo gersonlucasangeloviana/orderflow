@@ -1,5 +1,7 @@
 using OrderFlow.Application;
 using OrderFlow.Domain;
+using OrderFlow.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
@@ -8,24 +10,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter("public", o => { o.PermitLimit = 100; o.Window = TimeSpan.FromMinutes(1); }));
-builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
-builder.Services.AddSingleton<INotificationOutbox, InMemoryOutbox>();
+builder.Services.AddOrderFlowInfrastructure(builder.Configuration);
 builder.Services.AddScoped<CreateOrder>();
 var app = builder.Build();
 app.UseRateLimiter();
 app.UseSwagger(); app.UseSwaggerUI();
 app.Use(async (context, next) => { context.Response.Headers.TryAdd("X-Correlation-Id", context.Request.Headers["X-Correlation-Id"].FirstOrDefault() ?? Guid.NewGuid().ToString()); await next(); });
 app.MapHealthChecks("/health");
-app.MapGet("/api/products", () => Results.Ok(new[] { new Product(Guid.Parse("11111111-1111-1111-1111-111111111111"), "Notebook", "NB-1", 2999m) })).RequireRateLimiting("public");
-app.MapPost("/api/orders", async (CreateOrderRequest request, CreateOrder useCase, HttpContext context, CancellationToken cancellationToken) =>
+app.MapGet("/api/products", async (SqlProductCatalog catalog, CancellationToken cancellationToken) => Results.Ok(await catalog.ListAsync(cancellationToken))).RequireRateLimiting("public");
+app.MapPost("/api/orders", async (CreateOrderRequest request, CreateOrder useCase, OrderFlowDbContext db, HttpContext context, CancellationToken cancellationToken) =>
 {
-    var product = new Product(Guid.Parse("11111111-1111-1111-1111-111111111111"), "Notebook", "NB-1", 2999m);
-    var order = await useCase.ExecuteAsync(request.CustomerId, request.Items.Select(i => (product, i.Quantity)), request.Freight, context.Response.Headers["X-Correlation-Id"].ToString(), cancellationToken);
+    var ids = request.Items.Select(item => item.ProductId).Distinct().ToArray();
+    var products = await db.Products.Where(product => ids.Contains(product.Id) && product.IsActive).ToDictionaryAsync(product => product.Id, cancellationToken);
+    if (products.Count != ids.Length) return Results.ValidationProblem(new Dictionary<string, string[]> { ["items"] = ["Um ou mais produtos não foram encontrados."] });
+    var lines = request.Items.Select(item => (new Product(products[item.ProductId].Id, products[item.ProductId].Name, products[item.ProductId].Sku, products[item.ProductId].Price), item.Quantity));
+    var order = await useCase.ExecuteAsync(request.CustomerId, lines, request.Freight, context.Response.Headers["X-Correlation-Id"].ToString(), cancellationToken);
     return Results.Created($"/api/orders/{order.Id}", new { order.Id, order.Total, order.Status });
 });
 app.Run();
 
 public sealed record CreateOrderRequest(Guid CustomerId, decimal Freight, List<CreateOrderItem> Items);
-public sealed record CreateOrderItem(int Quantity);
-sealed class InMemoryOrderRepository : IOrderRepository { public Task AddAsync(Order order, CancellationToken cancellationToken) => Task.CompletedTask; }
-sealed class InMemoryOutbox : INotificationOutbox { public Task EnqueueAsync(OrderFlow.Contracts.NotificationRequested message, CancellationToken cancellationToken) => Task.CompletedTask; }
+public sealed record CreateOrderItem(Guid ProductId, int Quantity);
